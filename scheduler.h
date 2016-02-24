@@ -6,7 +6,7 @@
 *Nick Mousel
 *Chris Kubec
 *Molly Nelson
-*Date: 1/24/16
+*Date: 2/11/16
 *
 * Description:
 * This header file defines the class and methods for the Round Robin Scheduler
@@ -18,11 +18,16 @@
 #define TABLE_COLUMNS 5
 #include <time.h>
 #include <errno.h>
+#include <pthread.h>
 #include "fifo_queue.h"
 #include "stack.h"
 #include "cpu.h"
 #include "pcb.h"
 
+
+pthread_mutex_t timer_lock;
+pthread_mutex_t io_1_lock;
+pthread_mutex_t io_2_lock;
 
 typedef enum process_interrupt{ISR_TIMER, ISR_IO_1_REQUEST, ISR_IO_2_REQUEST, 
             ISR_IO_1_COMPLETION, ISR_IO_2_COMPLETION} Interrupt;

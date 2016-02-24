@@ -17,7 +17,7 @@
 #define _PCB_H
 #define MAX_TRAPS 4
 #define MAX_REGS 20
-#define MAX_PCB 2345
+#define MAX_PC 2345
 #include <time.h>
 
 typedef enum process_state {
@@ -83,5 +83,6 @@ int PCB_get_IO_2_traps(PCB_p,int, int*);
 //Utility Functions
 char * PCB_to_string(PCB_p);
 PCB_p PCB_create_random(int);
+void create_PCB_TRAPS(PCB_p pcb);
 void print_PCB(PCB_p);
 #endif

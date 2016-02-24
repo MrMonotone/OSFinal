@@ -6,7 +6,7 @@
 *Nick Mousel
 *Chris Kubec
 *Molly Nelson
-*Date: 1/24/16
+*Date: 2/10/16
 *
 * Description:
 * This source file implements the class and methods for pcb.h
@@ -20,8 +20,12 @@
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 PCB_p PCB_constructor(void){
+    //srand(time(NULL));
     time_t rawtime;
     time(&rawtime);
+    int i =0;
+    int temp_1 =0;
+    int temp_2 = 0;
     PCB_p new_pcb = malloc(sizeof(PCB));
     new_pcb->pid = 0;
     new_pcb->pc = 0;
@@ -34,9 +38,12 @@ PCB_p PCB_constructor(void){
     new_pcb->terminate = 0;
     new_pcb->term_count = 0;
 
-
-
-    int i =0;
+    for(i =0; i < MAX_TRAPS; i++){
+        new_pcb->IO_1_traps[i] =0;
+        new_pcb->IO_2_traps[i] =0;
+    }
+    create_PCB_TRAPS(new_pcb);
+        
     for(i=0; i < MAX_REGS; i++){
         new_pcb->register_file.registers[i] = 0;
     }
@@ -448,4 +455,25 @@ void print_PCB(PCB_p pcb){
         free(to_string);
     }
 }
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Fills the trap arrays in each pcb with random ints.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+void create_PCB_TRAPS(PCB_p pcb){
+    int i= 0, j =0;
+    int rand_1 =0;
+    int rand_2 = 0;
+    for(i=0; i < MAX_TRAPS; i++){
+        rand_1 = rand() % 100;
+        rand_2 = rand() % 100;
+        if(rand_1 == rand_2){
+           rand_2 = rand() % MAX_PC;
+        }
+         pcb->IO_1_traps[i] = rand_1;
+         
+         pcb->IO_2_traps[i] = rand_2;
 
+    }
+        
+   
+}       

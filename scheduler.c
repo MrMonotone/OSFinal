@@ -66,10 +66,10 @@ void Scheduler_transfer_node(FIFO_queue_p source, FIFO_queue_p destination){
         PCB_p temp_data = (PCB_p)(temp->data);
         if(temp != NULL){
             if(temp_data->p_state == READY){
-               printf("\nTransferring...\n");
-               print_PCB(temp_data);
-               printf("Source: %s\tDestination: %s\n",
-                    source->name, destination->name);
+               //printf("\nTransferring...\n");
+              // print_PCB(temp_data);
+               //printf("Source: %s\tDestination: %s\n",
+                //    source->name, destination->name);
                
             }
             FIFO_queue_enqueue_node(destination, temp);
@@ -118,35 +118,58 @@ void Scheduler_timer_handler(void *scheduler, CPU_p cpu){
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 void Scheduler_io_request_1_handler(void *scheduler, CPU_p cpu){
-    Scheduler_p temp = (Scheduler_p)(scheduler);
-    PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
-    PCB_set_p_state(temp_pcb, BLOCKED);
-    
-    Scheduler_transfer_node(temp->running_queue, temp->io_1_waiting_queue);   
-    Scheduler_dispatcher(temp, cpu);
+    if(pthread_mutex_trylock(&timer_lock) != EBUSY){
+        Scheduler_p temp = (Scheduler_p)(scheduler);
+        PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
+        PCB_set_p_state(temp_pcb, BLOCKED);
+        Scheduler_transfer_node(temp->running_queue, temp->io_1_waiting_queue);   
+        Scheduler_dispatcher(temp, cpu);
+        pthread_mutex_unlock(&timer_lock);
+    }else {
+        pthread_mutex_unlock(&timer_lock);
+        Scheduler_timer_handler(scheduler, cpu);
+        
+    }
 }
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 + Interrupt handler for io request 2 interrupt
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 void Scheduler_io_request_2_handler(void *scheduler, CPU_p cpu){
-    Scheduler_p temp = (Scheduler_p)(scheduler);
-    PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
-    PCB_set_p_state(temp_pcb, BLOCKED);
+    if(pthread_mutex_trylock(&timer_lock) != EBUSY ){
+        Scheduler_p temp = (Scheduler_p)(scheduler);
+        PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
+        PCB_set_p_state(temp_pcb, BLOCKED);   
+        Scheduler_transfer_node(temp->running_queue, temp->io_2_waiting_queue);   
+        Scheduler_dispatcher(temp, cpu);
+        pthread_mutex_unlock(&timer_lock);
+    }else {
+        pthread_mutex_unlock(&timer_lock);
+        Scheduler_timer_handler(scheduler, cpu);
+
+    }
+}    
     
-    Scheduler_transfer_node(temp->running_queue, temp->io_2_waiting_queue);   
-    Scheduler_dispatcher(temp, cpu);
-}
+    
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 + Interrupt handler for io request 1 interrupt
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 void Scheduler_io_completion_1_handler(void *scheduler, CPU_p cpu){
-    Scheduler_p temp = (Scheduler_p)(scheduler);
-    PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
-    PCB_set_p_state(temp_pcb, READY);
+    if(pthread_mutex_trylock(&timer_lock) != EBUSY){
     
-    Scheduler_transfer_node(temp->io_1_waiting_queue, temp->ready_queue);   
+        Scheduler_p temp = (Scheduler_p)(scheduler);
+        PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
+        PCB_set_p_state(temp_pcb, READY);
+    
+        Scheduler_transfer_node(temp->io_1_waiting_queue, temp->ready_queue);
+        pthread_mutex_unlock(&timer_lock);
+    }else {
+       // pthread_mutex_unlock(&timer_lock);
+        Scheduler_timer_handler(scheduler, cpu);
+        Scheduler_io_completion_1_handler(scheduler, cpu);
+    }  
     //Scheduler_dispatcher(temp, cpu);
 }
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -154,11 +177,18 @@ void Scheduler_io_completion_1_handler(void *scheduler, CPU_p cpu){
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 void Scheduler_io_completion_2_handler(void *scheduler, CPU_p cpu){
-    Scheduler_p temp = (Scheduler_p)(scheduler);
-    PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
-    PCB_set_p_state(temp_pcb, READY);
-    
-    Scheduler_transfer_node(temp->io_2_waiting_queue, temp->ready_queue);   
+    if(pthread_mutex_trylock(&timer_lock) != EBUSY){
+        Scheduler_p temp = (Scheduler_p)(scheduler);
+        PCB_p temp_pcb = (PCB_p)(temp->running_queue->head->data);
+        PCB_set_p_state(temp_pcb, READY);
+        Scheduler_transfer_node(temp->io_2_waiting_queue, temp->ready_queue);
+        pthread_mutex_unlock(&timer_lock);
+    }else {
+         pthread_mutex_unlock(&timer_lock);
+         Scheduler_timer_handler(scheduler, cpu);
+         
+         Scheduler_io_completion_2_handler(scheduler, cpu);
+    }
     //Scheduler_dispatcher(temp, cpu);
 }
 
