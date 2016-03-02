@@ -24,8 +24,7 @@
 typedef struct priority_queue
 {
   char name[NAME_LEN];
-  Node_p head;
-  Node_p tail;
+  FIFO_queue_p head;
   int size;
   FIFO_queue_p queue[PRIORITY_LEVELS];
 }priority_queue;
@@ -42,9 +41,10 @@ void priority_queue_destructor(priority_queue_p);
 
 //Utility Functions
 void priority_queue_enqueue(priority_queue_p, void*, int);
-void priority_queue_enqueue_node(priority_queue_p, Node_p);
+void priority_queue_enqueue_node(priority_queue_p, Node_p, int);
 Node_p priority_queue_dequeue(priority_queue_p);
 void print_priority_queue(priority_queue_p);
 void priority_queue_set_name(priority_queue_p, char[]);
+FIFO_queue_p priority_queue_find_head(priority_queue_p);
 
 #endif

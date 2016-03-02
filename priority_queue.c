@@ -27,7 +27,6 @@ priority_queue_p priority_queue_constructor(){
       queue->queue[i] = FIFO_queue_constructor();
     }
     queue->head = NULL;
-    queue->tail = NULL;
     priority_queue_set_name(queue, "Default");
     return queue;
 }
@@ -51,18 +50,15 @@ void priority_queue_destructor(priority_queue_p queue)
 */
 void priority_queue_enqueue(priority_queue_p queue, void *data, int priority)
 {
-  FIFO_queue_enqueue(queue->queue[priority], data);
+  PCB_p temp = (PCB_p)data;
+  FIFO_queue_enqueue(queue->queue[priority], temp);
   if(queue->head == NULL)
   {
-      queue->head = queue->tail = queue->queue[priority]->head;
+      queue->head = queue->queue[temp->priority];
   }
-  else if(data->priority => queue->tail->priority)
+  else if(temp->priority < ((PCB_p)queue->head->head->data)->priority)
   {
-    queue->tail = queue->queue[priority]->tail;
-  }
-  else if(data->priority < queue->head->priority)
-  {
-      queue->head = queue->queue[priority]->head;
+      queue->head = queue->queue[priority];
   }
   queue->size++;
 }
@@ -81,18 +77,10 @@ void priority_queue_enqueue_node(priority_queue_p queue, Node_p node, int priori
 */
 Node_p priority_queue_dequeue(priority_queue_p queue)
 {
-  int priority = queue->head->priority;
-  Node_p temp = FIFO_queue_dequeue(queue->queue[priority]);
-  queue->head = queue->queue[priority]->head;
-  if (queue->head == NULL)
+  Node_p temp = FIFO_queue_dequeue(queue->head);
+  if (queue->head->head == NULL)
   {
-    for(int i = 0; i < PRIORITY_LEVELS; i++)
-    {
-      if(queue[i]-> head != NULL)
-      {
-        queue->head = queue[i]->head;
-      }
-    }
+    queue->head = priority_queue_find_head(queue);
   }
   queue->size--;
   return temp;
@@ -121,14 +109,14 @@ void priority_queue_set_name(priority_queue_p queue, char name[])
 + Finds new head if a queue become empty
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
-Node_p priority_queue_find_head(priority_queue_p queue)
+FIFO_queue_p priority_queue_find_head(priority_queue_p queue)
 {
-  Node_p temp = NULL
+  FIFO_queue_p temp = NULL;
   for(int i = 0; i < PRIORITY_LEVELS; i++)
   {
-    if(queue[i]->head != NULL)
+    if(queue->queue[i]->head != NULL)
     {
-      temp = queue[i]->head;
+      temp = queue->queue[i];
       break;
     }
   }
