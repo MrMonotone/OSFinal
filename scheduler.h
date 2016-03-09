@@ -28,13 +28,14 @@
 pthread_mutex_t timer_lock;
 pthread_mutex_t io_1_lock;
 pthread_mutex_t io_2_lock;
+pthread_mutex_t ready_queue_lock;
 
-typedef enum process_interrupt{ISR_TIMER, ISR_IO_1_REQUEST, ISR_IO_2_REQUEST, 
+typedef enum process_interrupt{ISR_TIMER, ISR_IO_1_REQUEST, ISR_IO_2_REQUEST,
             ISR_IO_1_COMPLETION, ISR_IO_2_COMPLETION} Interrupt;
 
 
 typedef void (*interrupt_handler)(void*, CPU_p);
- 
+
 typedef struct schedule_cell{
    // State next_state;
     interrupt_handler handler;
@@ -49,9 +50,9 @@ typedef struct process_scheduler{
     FIFO_queue_p io_1_waiting_queue;
     FIFO_queue_p io_2_waiting_queue;
     FIFO_queue_p terminated_queue;
-   
+
     S_cell state_table[TABLE_ROWS][TABLE_COLUMNS];
-                                                  
+
 } Scheduler;
 typedef Scheduler *Scheduler_p;
 typedef struct thread_data{

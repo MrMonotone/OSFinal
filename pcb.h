@@ -27,10 +27,11 @@ typedef struct Register_file {
     int registers[MAX_REGS];
 }Register_file;
 typedef struct PCB {
-    int pid;
+    unsigned int pid;
     unsigned int pc;
     unsigned int sw;
     unsigned int priority;
+    unsigned int boost;
     int address;
     State p_state;
     Register_file register_file;
@@ -40,7 +41,6 @@ typedef struct PCB {
     int term_count;
     int IO_1_traps[MAX_TRAPS];
     int IO_2_traps[MAX_TRAPS];
-
 } PCB;
 
 typedef PCB * PCB_p;
