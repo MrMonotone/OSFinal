@@ -16,12 +16,15 @@
 *******************************************************************************/
 
 #include "scheduler.h"
+#include "priority_queue.h"
 #include <pthread.h>
 
+#define STARVATION_TIME 300
 void *timer_thread(void *data);
 void *io_device_1_thread(void *data);
 void *io_device_2_thread(void *data);
 void *cpu_thread(void *data);
+void *starvation_detection_thread(void *);
 
 int main(void){
     srand(time(NULL));
@@ -40,8 +43,8 @@ int main(void){
     pthread_attr_init(&attr);
     CPU_p cpu = CPU_constructor();
     Scheduler_p scheduler = Scheduler_constructor();
-    int i =0;
-    thread_data data = {cpu, scheduler, i};
+    int i = 0;
+    thread_data data = {cpu, scheduler, &i};
     PCB_p temp_pcb_1;
     for(i=0; i < 100; i++){
         PCB_p newer = PCB_constructor();
@@ -125,14 +128,14 @@ void *starvation_detection_thread(void *data)
     sleep_time.tv_sec = 0;
     sleep_time.tv_nsec = 100000000L;
     Scheduler_p scheduler = (Scheduler_p)t_data->scheduler;
-
+    int *quantum = (int *)t_data->quantum;
     for(;;)
     {
 
        //printf("Sending timer interrupt PID:%d was running,"
       //                            " PID:%d, dispatched\n", temp_pcb_1->pid,
       //                                temp_pcb_2->pid);
-      if (quantum % 10 == 0)
+      if (*quantum % 10 == 0)
       {
         pthread_mutex_lock(ready_queue_lock);
         for (int i = 1; i < PRIORITY_LEVELS; i++)
@@ -142,12 +145,13 @@ void *starvation_detection_thread(void *data)
           while(index != NULL)
           {
             PCB_p temp = (PCB_p) index->data;
-            // TODO if time passed is enough up priority
-            if (true)
+            time_t rawtime;
+            if (localtime(&rawtime) - temp->last_run >= STARVATION_TIME)
             {
-              if(temp->priority - temp->boosted > 1)
+              if(temp->priority - temp->boost > 1)
               {
-                temp->boosted++;
+                printf("SHIT WAS boosted");
+                //temp->boosted++;
               }
             }
             index = index->next;

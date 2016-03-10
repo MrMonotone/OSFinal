@@ -36,6 +36,7 @@ typedef struct PCB {
     State p_state;
     Register_file register_file;
     struct tm *creation;
+    struct tm *last_run;
     struct tm *termination;
     unsigned int terminate;
     int term_count;

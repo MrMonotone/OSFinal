@@ -24,8 +24,6 @@ PCB_p PCB_constructor(void){
     time_t rawtime;
     time(&rawtime);
     int i =0;
-    int temp_1 =0;
-    int temp_2 = 0;
     PCB_p new_pcb = malloc(sizeof(PCB));
     new_pcb->pid = 0;
     new_pcb->pc = 0;
@@ -34,6 +32,7 @@ PCB_p PCB_constructor(void){
     new_pcb->address = 0;
     new_pcb->p_state = NEW;
     new_pcb->creation = localtime(&rawtime);
+    new_pcb->last_run = localtime(&rawtime);
     new_pcb->termination = 0;
     new_pcb->terminate = 0;
     new_pcb->term_count = 0;
@@ -43,7 +42,7 @@ PCB_p PCB_constructor(void){
         new_pcb->IO_2_traps[i] =0;
     }
     create_PCB_TRAPS(new_pcb);
-        
+
     for(i=0; i < MAX_REGS; i++){
         new_pcb->register_file.registers[i] = 0;
     }
@@ -470,10 +469,10 @@ void create_PCB_TRAPS(PCB_p pcb){
            rand_2 = rand() % MAX_PC;
         }
          pcb->IO_1_traps[i] = rand_1;
-         
+
          pcb->IO_2_traps[i] = rand_2;
 
     }
-        
-   
-}       
+
+
+}

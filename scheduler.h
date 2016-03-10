@@ -58,6 +58,7 @@ typedef Scheduler *Scheduler_p;
 typedef struct thread_data{
     CPU_p cpu;
     Scheduler_p scheduler;
+    int *quantum;
     struct timespec sleep_time;
 }thread_data;
 
