@@ -32,6 +32,7 @@ int main(void){
     pthread_t io_device_1_t;
     pthread_t io_device_2_t;
     pthread_t starvation_detect_t;
+    pthread_t deadlock_detect_t;
 
     pthread_attr_t attr;
 
@@ -63,11 +64,14 @@ int main(void){
     pthread_create(&io_device_1_t, &attr, io_device_1_thread, (void *)&data);
     pthread_create(&io_device_2_t, &attr, io_device_2_thread, (void *)&data);
     pthread_create(&starvation_detect_t, &attr, starvation_detection_thread, (void *)&data);
+    pthread_create(&deadlock_detect_t, &attr, deadlock_detection_thread, (void *)&data);
 
     pthread_join(timer_t, NULL);
     pthread_join(io_device_1_t, NULL);
     pthread_join(io_device_2_t, NULL);
     pthread_join(starvation_detect_t, NULL);
+    pthread_join(deadlock_detect_t, NULL);
+
     for(i =0; i < 1000; i++){
        temp_pcb_1 = (PCB_p)scheduler->running_queue->head->data;
        temp_pcb_1->pc++;
@@ -126,7 +130,7 @@ void *starvation_detection_thread(void *data)
     thread_data *t_data = (thread_data*)(data);
     struct timespec sleep_time;
     sleep_time.tv_sec = 0;
-    sleep_time.tv_nsec = 100000000L;
+    sleep_time.tv_nsec = 10000000L;
     Scheduler_p scheduler = (Scheduler_p)t_data->scheduler;
     int *quantum = (int *)t_data->quantum;
     for(;;)
@@ -138,7 +142,8 @@ void *starvation_detection_thread(void *data)
       if (*quantum % 10 == 0)
       {
         pthread_mutex_lock(ready_queue_lock);
-        for (int i = 1; i < PRIORITY_LEVELS; i++)
+        int i;
+        for (i = 1; i < PRIORITY_LEVELS; i++)
         {
           FIFO_queue_p level = scheduler->ready_queue->queue[i];
           Node_p index = level->head;
@@ -164,6 +169,26 @@ void *starvation_detection_thread(void *data)
     pthread_exit(NULL);
 
 }
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+* Deadlock detection thread
+*
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+void *deadlock_detection_thread(void *data){
+	thread_data *t_data = (thread_data*)(data);
+	struct timespec sleep_time;
+	sleep_time.tv_sec = 0;
+	sleep_time.tv_nsec = 100000000L;
+    int *quantum = (int *)t_data->quantum;
+
+	for(;;){
+		if(*quantum % 10 == 0)
+			deadlock(PutShitA, PutShitB); //Adjust Here
+	}
+	pthread_exit(NULL);
+}
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 * IO device 1 thread will send interrupt depending on value of current pcb,
 * then sleep, then finish io request.
