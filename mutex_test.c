@@ -15,7 +15,10 @@ int main(void){
     mutex_unlock(mutex_A);
     mutex_unlock(mutex_A);
     mutex_lock(mutex_A, process_3);
-
+    mutex_cond_p condition =  mutex_cond_var_constructor("luke at me", mutex_A);
+    mutex_cond_signal(condition, mutex_A, process_1);
+    mutex_cond_wait(condition, mutex_B, process_3);
+    
     PCB_destructor(process_1);
    PCB_destructor(process_2);
     PCB_destructor(process_3);

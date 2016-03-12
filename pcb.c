@@ -41,7 +41,14 @@ PCB_p PCB_constructor(void){
     for(i =0; i < MAX_TRAPS; i++){
         new_pcb->IO_1_traps[i] =0;
         new_pcb->IO_2_traps[i] =0;
+        new_pcb->mutex_lock[i] = rand()% 5;
+        new_pcb->mutex_unlock[i] = rand()%5;
+        new_pcb->mutex_trylock[i] = rand()%5;
+        new_pcb->mutex_cond_request[i] = rand() %5;
+        new_pcb->mutex_cond_signal[i] = rand() %5;
+        
     }
+        
     create_PCB_TRAPS(new_pcb);
 
     for(i=0; i < MAX_REGS; i++){
@@ -464,16 +471,18 @@ void create_PCB_TRAPS(PCB_p pcb){
     int rand_1 =0;
     int rand_2 = 0;
     for(i=0; i < MAX_TRAPS; i++){
-        rand_1 = rand() % MAX_PC;
-        rand_2 = rand() % MAX_PC;
+        rand_1 = (rand() % MAX_PC)+9;
+        rand_2 = (rand() % MAX_PC)+9;
         if(rand_1 == rand_2){
-           rand_2 = rand() % MAX_PC;
+           rand_2 = rand() % MAX_PC +9;
         }
          pcb->IO_1_traps[i] = rand_1;
 
          pcb->IO_2_traps[i] = rand_2;
 
     }
-
-
 }
+
+
+    
+

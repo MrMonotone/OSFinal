@@ -42,6 +42,11 @@ typedef struct PCB {
     int term_count;
     int IO_1_traps[MAX_TRAPS];
     int IO_2_traps[MAX_TRAPS];
+    int mutex_lock[MAX_TRAPS];
+    int mutex_unlock[MAX_TRAPS];
+    int mutex_trylock[MAX_TRAPS];
+    int mutex_cond_request[MAX_TRAPS];
+    int mutex_cond_signal[MAX_TRAPS];
 } PCB;
 
 typedef PCB * PCB_p;

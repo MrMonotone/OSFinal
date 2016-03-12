@@ -34,8 +34,7 @@ void mutex_unlock(mutex_p mutex_to_unlock){
             //free(mutex_node->data);
             free(mutex_node);
        }else {
-            free(mutex_node->data);
-            free(mutex_node);
+            Node_destructor(mutex_node);
         }   
 
     }else {
@@ -60,11 +59,11 @@ void mutex_lock(mutex_p mutex_to_lock, PCB_p current_process){
         print_FIFO_queue(mutex_to_lock->blocked_processes);
         mutex_to_lock->lock = 1;
     }else {
-        //if(mutex_to_lock->lock == 0){
+
         printf("Current process pid:%d got a lock on mutex: %s\n", current_process->pid, mutex_to_lock->name);
         mutex_to_lock->current_process = current_process;
         mutex_to_lock->lock =1;
-       // }
+
     }
 }
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -82,10 +81,46 @@ mutex_state mutex_trylock(mutex_p mutex_to_lock, PCB_p the_process){
     }
     return state;
 }
-
-
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-+ Function for a process, to lock a particular mutex
++ Function for two processes that share a mutex to communicate,
++ And get a lock on a mutex under certain conditions. 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
+mutex_cond_p mutex_cond_var_constructor(char name[], mutex_p mutex){
+  mutex_cond_p cond_var = malloc(sizeof(mutex_cond_var));
+  int i= 0;
+  for(i =0; i < MAX_NAME-1; i++){
+    cond_var->name[i] = name[i];
+  }
+  cond_var->name[MAX_NAME] = '\0'; 
+  cond_var->input_mutex = mutex;
+  cond_var->state = NONE;
+  return cond_var;
+}
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Function to communicate between processes sharing a mutex, through a cond var.
++ Cond wait updates the state of the condition variable to wait
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+void mutex_cond_wait(mutex_cond_p cond_var, mutex_p some_mutex, PCB_p some_process){
+    cond_var->state = WAIT;
+    cond_var->input_mutex = some_mutex;
+    printf("PID %d requested condition wait on %s, with mutex %s\n",some_process->pid,
+             cond_var->name, some_mutex->name); 
+            
+   // mutex_unlock(cond_var->input_mutex);  
+}
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Function to communicate between processes sharing a mutex, through a cond var.
++ Cond signal updates the state of the condition variable that is waiting
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+void mutex_cond_signal(mutex_cond_p cond_var, mutex_p some_mutex, PCB_p some_process){
+    cond_var->state = SIGNAL;
+    cond_var->input_mutex = some_mutex;
+    printf("PID %d sent signal on condition %s, with mutex %s\n",
+            some_process->pid, cond_var->name, some_mutex->name); 
+    //mutex_lock(cond_var->input_mutex, some_process);
+}
+
+
 
