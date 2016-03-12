@@ -20,7 +20,8 @@
 typedef struct pcp{
   PCB_p producer;
   PCB_p consumer;
-  mutex_p sharedmutex;
+  mutex_p sharedmutex1;
+  mutex_p sharedmutex2;
   mutex_cond_p sharedcon;
 }PCP;
 typedef PCP *PCP_p;
