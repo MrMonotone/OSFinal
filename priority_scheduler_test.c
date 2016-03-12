@@ -24,6 +24,7 @@ void *io_device_1_thread(void *);
 void *io_device_2_thread(void *);
 void *starvation_detection_thread(void *);
 void *cpu_thread(void *);
+void *deadlock_dectect_thread(void *);
 static int the_pc = 0;
 int main(void){
     srand(time(NULL));
