@@ -372,13 +372,13 @@ void *deadlock_detection_thread(void *data)
         if (pcp->sharedmutex1->current_process == pcp->producer &&
             pcp->sharedmutex2->current_process == pcp->consumer)
             {
-              printf("%s\n", "DEADLOCK");
+              printf("DEADLOCK detected for PID %d and PID %d!\n", pcp->producer->pid, pcp->consumer->pid);
               continue;
             }
             if (pcp->sharedmutex2->current_process == pcp->producer &&
                 pcp->sharedmutex1->current_process == pcp->consumer)
                 {
-                  printf("%s\n", "DEADLOCK");
+                  printf("DEADLOCK detected for PID %d and PID %d!\n", pcp->producer->pid, pcp->consumer->pid);
                   continue;
                 }
           printf("%s\n", "NO DEADLOCK");
