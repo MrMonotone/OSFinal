@@ -6,7 +6,7 @@
 *Nick Mousel
 *Chris Kubec
 *Molly Nelson
-*Date: 1/24/16
+*Date: 3/10/16
 *
 * Description:
 * This header file defines the class and methods for a Node

@@ -19,6 +19,7 @@
 */
 Node_p Node_constructor(void *data){
     Node_p new = malloc(sizeof(Node) + sizeof(data));
+   // Node_p new = malloc(sizeof(Node));
     new->next = NULL;
     new->data = data;
     return new;
@@ -36,3 +37,5 @@ void Node_destructor(Node_p node){
          free(node);
     }
 }
+
+

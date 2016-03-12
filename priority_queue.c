@@ -28,6 +28,7 @@ priority_queue_p priority_queue_constructor(){
     }
     queue->head = NULL;
     priority_queue_set_name(queue, "Default");
+    queue->size =0;
     return queue;
 }
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -78,6 +79,7 @@ void priority_queue_enqueue_node(priority_queue_p queue, Node_p node, int priori
 Node_p priority_queue_dequeue(priority_queue_p queue)
 {
   Node_p temp = FIFO_queue_dequeue(queue->head);
+  temp->next = NULL;
   if (queue->head->head == NULL)
   {
     queue->head = priority_queue_find_head(queue);
@@ -122,3 +124,22 @@ FIFO_queue_p priority_queue_find_head(priority_queue_p queue)
   }
   return temp;
 }
+void update_priority_queue(priority_queue_p the_queue){
+    int i =1;
+    int j =0;
+    Node_p temp;
+    PCB_p temp_pcb;
+    for(i =1; i < PRIORITY_LEVELS; i++){
+        if(the_queue->queue[i]->head){
+            for(j=0; j < the_queue->queue[i]->size; j++){
+                temp = FIFO_queue_dequeue(the_queue->queue[i]);
+                temp_pcb = (PCB_p)temp->data;
+            //boost-a-tize me cap'n
+            priority_queue_enqueue_node(the_queue, 
+                                    temp, temp_pcb->priority - temp_pcb->boost);
+                
+            }
+        }
+    }
+}
+            

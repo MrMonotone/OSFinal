@@ -17,7 +17,7 @@
 #define _PCB_H
 #define MAX_TRAPS 4
 #define MAX_REGS 20
-#define MAX_PC 2345
+#define MAX_PC 10
 #include <time.h>
 
 typedef enum process_state {

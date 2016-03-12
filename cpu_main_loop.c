@@ -162,6 +162,7 @@ void *starvation_detection_thread(void *data)
             index = index->next;
         }
       }
+
       pthread_mutex_unlock(ready_queue_lock);
     }
       if(nanosleep(&sleep_time, NULL) > 0);

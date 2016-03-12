@@ -46,5 +46,5 @@ Node_p priority_queue_dequeue(priority_queue_p);
 void print_priority_queue(priority_queue_p);
 void priority_queue_set_name(priority_queue_p, char[]);
 FIFO_queue_p priority_queue_find_head(priority_queue_p);
-
+void update_priority_queue(priority_queue_p);
 #endif

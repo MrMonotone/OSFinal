@@ -6,7 +6,7 @@
 *Nick Mousel
 *Chris Kubec
 *Molly Nelson
-*Date: 2/10/16
+*Date: 3/10/16
 *
 * Description:
 * This source file implements the class and methods for pcb.h
@@ -29,11 +29,12 @@ PCB_p PCB_constructor(void){
     new_pcb->pc = 0;
     new_pcb->sw = 0;
     new_pcb->priority = 0;
+    new_pcb->boost = 0;
     new_pcb->address = 0;
     new_pcb->p_state = NEW;
     new_pcb->creation = localtime(&rawtime);
     new_pcb->last_run = localtime(&rawtime);
-    new_pcb->termination = 0;
+    new_pcb->termination = localtime(&rawtime);
     new_pcb->terminate = 0;
     new_pcb->term_count = 0;
 
@@ -459,12 +460,12 @@ void print_PCB(PCB_p pcb){
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 void create_PCB_TRAPS(PCB_p pcb){
-    int i= 0, j =0;
+    int i= 0;
     int rand_1 =0;
     int rand_2 = 0;
     for(i=0; i < MAX_TRAPS; i++){
-        rand_1 = rand() % 100;
-        rand_2 = rand() % 100;
+        rand_1 = rand() % MAX_PC;
+        rand_2 = rand() % MAX_PC;
         if(rand_1 == rand_2){
            rand_2 = rand() % MAX_PC;
         }

@@ -6,7 +6,7 @@
 *Nick Mousel
 *Chris Kubec
 *Molly Nelson
-*Date: 1/24/16
+*Date: 3/10/16
 *
 * Description:
 * This source file implements the class and functions defined in fifo_queue.h.
@@ -107,7 +107,9 @@ void print_FIFO_queue(FIFO_queue_p queue){
     if(queue){
        int i =0;
        Node_p temp = queue->head;
-       printf("%s \n", queue->name);
+       if(temp != NULL){
+            printf("%s \n", queue->name);
+       }
        while(temp != NULL){
             PCB_p pcb = (PCB_p) temp->data;
             if(i == 0){
